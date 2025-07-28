@@ -247,12 +247,8 @@ export class ARAnimation {
             // 根据环境使用不同的路径
             const basePath = import.meta.env.DEV ? './images/' : '/AR2/images/';
             const framePaths = [
-                basePath + 'GIF1.png',
-                basePath + 'GIF2.png',
-                basePath + 'GIF3.png',
-                basePath + 'GIF4.png',
-                basePath + 'GIF5.png',
-                basePath + 'GIF6.png'
+                basePath + 'zm1.png',
+                basePath + 'zm2.png'
             ];
             
             let loadedCount = 0;
