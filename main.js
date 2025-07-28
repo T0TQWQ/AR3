@@ -174,7 +174,7 @@ class OptimizedARApp {
         // 尝试加载marker，但不阻塞
         try {
             // 根据环境使用不同的路径
-            const markerPath = import.meta.env.DEV ? './images/marker.png' : '/AR2/images/marker.png';
+            const markerPath = import.meta.env.DEV ? './images/marker.png' : '/AR3/images/marker.png';
             await tracker.addTemplate(markerPath, 'marker');
             console.log('Marker加载成功');
         } catch (error) {

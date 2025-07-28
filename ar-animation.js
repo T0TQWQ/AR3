@@ -245,7 +245,7 @@ export class ARAnimation {
     loadFrames() {
         return new Promise((resolve, reject) => {
             // 根据环境使用不同的路径
-            const basePath = import.meta.env.DEV ? './images/' : '/AR2/images/';
+            const basePath = import.meta.env.DEV ? './images/' : '/AR3/images/';
             const framePaths = [
                 basePath + 'zm1.png',
                 basePath + 'zm2.png'
