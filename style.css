@@ -166,6 +166,19 @@ body {
     transform: translateY(-1px);
 }
 
+/* 摄像头切换按钮特殊样式 */
+#switchCameraBtn {
+    background: linear-gradient(135deg, #2196F3, #03A9F4);
+    border: 1px solid rgba(33, 150, 243, 0.5);
+    box-shadow: 0 2px 8px rgba(33, 150, 243, 0.3);
+}
+
+#switchCameraBtn:hover {
+    background: linear-gradient(135deg, #1976D2, #0288D1);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(33, 150, 243, 0.4);
+}
+
 /* AR界面 - 默认隐藏 */
 #arScreen {
     background: #000;

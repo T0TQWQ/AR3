@@ -59,6 +59,8 @@ class OptimizedARApp {
         this.detectionCanvas = null;
         this.detectionCtx = null;
         this.resourcesLoaded = false;
+        this.currentCamera = 'environment'; // 当前摄像头：environment(后置) 或 user(前置)
+        this.currentStream = null; // 当前摄像头流
         this.init();
     }
 
@@ -105,6 +107,7 @@ class OptimizedARApp {
         this.startARBtn = document.getElementById('startAR');
         this.backBtn = document.getElementById('backBtn');
         this.captureBtn = document.getElementById('captureBtn');
+        this.switchCameraBtn = document.getElementById('switchCameraBtn');
         this.status = document.getElementById('status');
         this.video = document.getElementById('video');
         this.canvas = document.getElementById('canvas');
@@ -251,6 +254,10 @@ class OptimizedARApp {
         
         if (this.captureBtn) {
             this.captureBtn.addEventListener('click', () => this.capturePhoto());
+        }
+        
+        if (this.switchCameraBtn) {
+            this.switchCameraBtn.addEventListener('click', () => this.switchCamera());
         }
         
         console.log('事件监听器初始化完成');
@@ -446,18 +453,24 @@ class OptimizedARApp {
 
     async requestCamera() {
         try {
+            // 停止当前摄像头流
+            if (this.currentStream) {
+                this.currentStream.getTracks().forEach(track => track.stop());
+            }
+            
             const stream = await navigator.mediaDevices.getUserMedia({
                 video: {
                     width: { ideal: 640 },
                     height: { ideal: 480 },
-                    facingMode: 'environment' // 优先使用后置摄像头
+                    facingMode: this.currentCamera
                 }
             });
             
+            this.currentStream = stream;
             this.video.srcObject = stream;
             this.video.play();
             
-            console.log('摄像头启动成功');
+            console.log(`摄像头启动成功: ${this.currentCamera === 'environment' ? '后置' : '前置'}`);
             return true;
             
         } catch (error) {
@@ -494,8 +507,44 @@ class OptimizedARApp {
         console.log('停止AR体验...');
         this.stopTracking();
         this.hideAnimation();
+        
+        // 停止摄像头流
+        if (this.currentStream) {
+            this.currentStream.getTracks().forEach(track => track.stop());
+            this.currentStream = null;
+        }
+        
         this.showStartScreen();
         this.updateStatus('AR体验已停止 / AR Experience Stopped');
+    }
+
+    async switchCamera() {
+        try {
+            console.log('切换摄像头...');
+            this.updateStatus('切换摄像头中... / Switching camera...');
+            
+            // 切换摄像头类型
+            this.currentCamera = this.currentCamera === 'environment' ? 'user' : 'environment';
+            
+            // 重新请求摄像头
+            const success = await this.requestCamera();
+            
+            if (success) {
+                const cameraName = this.currentCamera === 'environment' ? '后置' : '前置';
+                this.updateStatus(`已切换到${cameraName}摄像头 / Switched to ${cameraName} camera`);
+                console.log(`摄像头切换成功: ${cameraName}`);
+            } else {
+                // 如果切换失败，尝试切换回原来的摄像头
+                this.currentCamera = this.currentCamera === 'environment' ? 'user' : 'environment';
+                await this.requestCamera();
+                this.updateStatus('摄像头切换失败 / Camera switch failed');
+                console.error('摄像头切换失败');
+            }
+            
+        } catch (error) {
+            console.error('摄像头切换出错:', error);
+            this.updateStatus('摄像头切换失败 / Camera switch failed');
+        }
     }
 
     capturePhoto() {
