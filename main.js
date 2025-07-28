@@ -245,7 +245,13 @@ class OptimizedARApp {
         console.log('初始化事件监听器...');
         
         if (this.startARBtn) {
-            this.startARBtn.addEventListener('click', () => this.startAR());
+            console.log('找到开始按钮，添加事件监听器');
+            this.startARBtn.addEventListener('click', () => {
+                console.log('开始按钮被点击');
+                this.startAR();
+            });
+        } else {
+            console.error('未找到开始按钮');
         }
         
         if (this.backBtn) {
