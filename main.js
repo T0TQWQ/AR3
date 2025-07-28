@@ -530,6 +530,9 @@ class OptimizedARApp {
             const success = await this.requestCamera();
             
             if (success) {
+                // 等待视频加载完成并重新设置canvas尺寸
+                await this.waitForVideoLoad();
+                
                 const cameraName = this.currentCamera === 'environment' ? '后置' : '前置';
                 this.updateStatus(`已切换到${cameraName}摄像头 / Switched to ${cameraName} camera`);
                 console.log(`摄像头切换成功: ${cameraName}`);
@@ -537,6 +540,7 @@ class OptimizedARApp {
                 // 如果切换失败，尝试切换回原来的摄像头
                 this.currentCamera = this.currentCamera === 'environment' ? 'user' : 'environment';
                 await this.requestCamera();
+                await this.waitForVideoLoad();
                 this.updateStatus('摄像头切换失败 / Camera switch failed');
                 console.error('摄像头切换失败');
             }
@@ -555,15 +559,19 @@ class OptimizedARApp {
             const tempCanvas = document.createElement('canvas');
             const tempCtx = tempCanvas.getContext('2d');
             
-            tempCanvas.width = this.canvas.width;
-            tempCanvas.height = this.canvas.height;
+            // 使用视频的实际尺寸，而不是canvas的尺寸
+            const videoWidth = this.video.videoWidth;
+            const videoHeight = this.video.videoHeight;
             
-            // 先绘制摄像头画面
-            tempCtx.drawImage(this.video, 0, 0, tempCanvas.width, tempCanvas.height);
+            tempCanvas.width = videoWidth;
+            tempCanvas.height = videoHeight;
             
-            // 再叠加动画帧
+            // 先绘制摄像头画面，保持原始宽高比
+            tempCtx.drawImage(this.video, 0, 0, videoWidth, videoHeight);
+            
+            // 再叠加动画帧，使用相同的尺寸
             if (this.animation && this.animation.isLoaded) {
-                this.animation.drawCurrentFrameToContext(tempCtx, tempCanvas.width, tempCanvas.height);
+                this.animation.drawCurrentFrameToContext(tempCtx, videoWidth, videoHeight);
             }
             
             // 保存合成图片
