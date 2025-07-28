@@ -13,7 +13,7 @@ export class ARAnimation {
         this.frames = []; // 存储所有帧图片
         this.currentFrame = 0; // 当前帧索引
         this.frameCount = 0; // 总帧数
-        this.fps = 8; // 降低帧率到8fps，减少CPU使用
+        this.fps = 0.8; // 降低帧率到0.8fps，放慢10倍切换速度
         this.lastFrameTime = 0; // 上一帧时间
         this.isLoaded = false; // 是否加载完成
         
