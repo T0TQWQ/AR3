@@ -341,8 +341,40 @@ class OptimizedARApp {
         if (!this.isTracking || !this.video || !this.canvas || !this.ctx) return;
         
         try {
-            // 绘制视频帧到canvas
-            this.ctx.drawImage(this.video, 0, 0, this.canvas.width, this.canvas.height);
+            // 获取canvas的显示尺寸（CSS设置的尺寸）
+            const displayWidth = this.canvas.offsetWidth;
+            const displayHeight = this.canvas.offsetHeight;
+            
+            // 获取视频的实际尺寸
+            const videoWidth = this.video.videoWidth;
+            const videoHeight = this.video.videoHeight;
+            
+            // 计算保持宽高比的绘制尺寸
+            const videoAspectRatio = videoWidth / videoHeight;
+            const displayAspectRatio = displayWidth / displayHeight;
+            
+            let drawWidth, drawHeight, drawX, drawY;
+            
+            if (videoAspectRatio > displayAspectRatio) {
+                // 视频更宽，以宽度为准
+                drawWidth = displayWidth;
+                drawHeight = displayWidth / videoAspectRatio;
+                drawX = 0;
+                drawY = (displayHeight - drawHeight) / 2;
+            } else {
+                // 视频更高，以高度为准
+                drawHeight = displayHeight;
+                drawWidth = displayHeight * videoAspectRatio;
+                drawX = (displayWidth - drawWidth) / 2;
+                drawY = 0;
+            }
+            
+            // 设置canvas的实际尺寸为显示尺寸
+            this.canvas.width = displayWidth;
+            this.canvas.height = displayHeight;
+            
+            // 绘制视频帧到canvas，保持宽高比
+            this.ctx.drawImage(this.video, drawX, drawY, drawWidth, drawHeight);
             
             // 检测marker
             this.detectMarker();
@@ -488,11 +520,12 @@ class OptimizedARApp {
             this.video.onloadedmetadata = () => {
                 clearTimeout(timeout);
                 
-                // 设置canvas尺寸
-                this.canvas.width = this.video.videoWidth;
-                this.canvas.height = this.video.videoHeight;
-                
-                console.log('视频加载完成');
+                // Canvas尺寸将在trackFrame中动态设置
+                // 这里只记录视频尺寸信息
+                console.log('视频加载完成', {
+                    videoWidth: this.video.videoWidth,
+                    videoHeight: this.video.videoHeight
+                });
                 resolve();
             };
             
