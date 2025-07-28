@@ -355,6 +355,13 @@ class OptimizedARApp {
             const videoWidth = this.video.videoWidth;
             const videoHeight = this.video.videoHeight;
             
+            // 检查视频是否已加载
+            if (!videoWidth || !videoHeight) {
+                console.log('视频尺寸未准备好，跳过绘制');
+                requestAnimationFrame(() => this.trackFrame());
+                return;
+            }
+            
             // 计算保持宽高比的绘制尺寸
             const videoAspectRatio = videoWidth / videoHeight;
             const displayAspectRatio = displayWidth / displayHeight;
