@@ -87,7 +87,11 @@ class OptimizedARApp {
                 this.loadResourcesInBackground();
             } else {
                 // 传统模式：等待资源加载完成
-                this.initTrackersAsync();
+                this.showLoading(); // 显示加载界面
+                this.initTrackersAsync().then(() => {
+                    this.hideLoading();
+                    this.showStartScreen();
+                });
             }
             
         } catch (error) {
