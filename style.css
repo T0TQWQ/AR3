@@ -95,7 +95,7 @@ body {
 /* 启动界面 - 默认显示 */
 #startScreen {
     background: linear-gradient(135deg, #8B0000 0%, #DC143C 100%);
-    display: flex; /* 默认显示 */
+    display: flex !important; /* 强制显示 */
 }
 
 .start-content {
